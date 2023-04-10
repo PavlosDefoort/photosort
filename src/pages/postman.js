@@ -69,7 +69,7 @@ function HomePage() {
     }
 
     fetch(url, requestOptions)
-      .then((response) => response.json()) // parse response as JSON
+      .then((response) => response.json()) // parse response as JSON (can be res.text() for plain response)
       .then((result) => {
         if (result != null) {
           const filteredArticles = result.data.children.filter((post) => {
