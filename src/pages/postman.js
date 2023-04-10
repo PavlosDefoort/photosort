@@ -42,6 +42,8 @@ function HomePage() {
 
   const bearer = "bearer " + token?.access_token ?? "bearer";
 
+  console.log(token);
+
   function Generate() {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Basic " + process.env.auth);
