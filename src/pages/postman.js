@@ -55,8 +55,8 @@ function HomePage() {
 
     var urlencoded = new URLSearchParams();
     urlencoded.append("grant_type", "password");
-    urlencoded.append("username", process.env.password);
-    urlencoded.append("password", process.env.userName);
+    urlencoded.append("username", process.env.userName);
+    urlencoded.append("password", process.env.password);
 
     var requestOptions = {
       method: "POST",
