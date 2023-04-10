@@ -13,6 +13,7 @@ import MultipleCheckTemplate from "./MultiSelect";
 
 import GridGallery from "./offthegrid";
 import { Disclosure } from "@headlessui/react";
+import Generate from ".//api/generateToken";
 
 function HomePage() {
   const [posts, setPosts] = useState([]);
@@ -31,9 +32,44 @@ function HomePage() {
   const [time, setTime] = useState("all");
   const [isTime, setIsTime] = useState(false);
   const [nsfw, setNsfw] = useState(false);
-  const daKey = process.env.customKey;
+  const [token, setToken] = useState(null);
 
-  const bearer = "bearer " + daKey;
+  useEffect(() => {
+    if (!token) {
+      Generate().then((result) => setToken(result));
+    }
+  }, [token]);
+
+  const bearer = "bearer " + token?.access_token ?? "bearer";
+
+  function Generate() {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Basic " + process.env.auth);
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    myHeaders.append(
+      "Cookie",
+      "csv=2; edgebucket=GNBcA2zVmNgEdkIhDc; loid=0000000000adnpt678.2.1613408283000.Z0FBQUFBQmtOR20tQTVuS0NJaUFpWlV5LUtqZDdwSXU0QkNKU3Rialp0NlR5RUdpRGZoNVZXbzJGN2hBZzhyRkpramxISjRIYlM0VTIwYXM2QVlkV2g3cllfXzFZTHFSTXdyOWFLcUY0WjBCLU9kcWhnOEZOSnFJUXhaa3dnXzQxRlZnTFRKb2oyS1Q; session_tracker=bedprdqokhnbrlkodc.0.1681156708161.Z0FBQUFBQmtOR3BrdWh5WDhjS3V5SThQcTJhOTEtZjNQdHUwamtmM0ltRzFTOG9EZFUtWHVJZFdVY3BQcEQ0c1hRVUxyUXA4Qy0tXzBqdDAwZjQxQjN0T1lwc2g0MWx6R2tnQXJ6Z2dkV1FCQXgzQWVLbHVSTTVLXzFNMVVyVFJaT2xSNXlmMC1ucFg"
+    );
+
+    var urlencoded = new URLSearchParams();
+    urlencoded.append("grant_type", "password");
+    urlencoded.append("username", process.env.password);
+    urlencoded.append("password", process.env.userName);
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: "follow",
+    };
+
+    fetch("https://www.reddit.com/api/v1/access_token", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        return result;
+      })
+      .catch((error) => console.log("error", error));
+  }
 
   useEffect(() => {
     if (posts.length >= max || count == 10) {
@@ -201,6 +237,7 @@ function HomePage() {
               <MultipleSelectCheckmarks
                 props={subreddit}
                 onSelectChange={handleSelectChange}
+                bearer={bearer}
               />
               <div style={{ padding: "1rem" }}>
                 <input

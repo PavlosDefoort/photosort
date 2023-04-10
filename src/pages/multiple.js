@@ -19,11 +19,15 @@ const MenuProps = {
   },
 };
 
-export default function MultipleSelectCheckmarks({ props, onSelectChange }) {
+export default function MultipleSelectCheckmarks({
+  props,
+  onSelectChange,
+  bearer,
+}) {
   const [namess, setNames] = useState([]);
   var myHeaders = new Headers();
   myHeaders.append("User-Agent", "ChangeMeClient/0.1 by YourUsername");
-  myHeaders.append("Authorization", "bearer " + process.env.customKey);
+  myHeaders.append("Authorization", "bearer " + bearer);
   myHeaders.append(
     "Cookie",
     "csv=2; edgebucket=vu8Zr0Azm9tXfQWpq1; loid=0000000000adnpt678.2.1613408283000.Z0FBQUFBQmtNS3RDNDRiX1Nqc2xjeldFMW5fUFh1bGJRTHl4VlY5YmFfd1FneE14SWNMdllEQURObWRtWVdaZE1CSDU0UDZ6YWpraE8tSVJNVDhiMDRHcGlycDNtdXkzajhjZ0xyTjBNMUI1bC1JTEN5RlFxQk5lQnhCLTBhVjA1MGtvQVB1OTN4NUs; session_tracker=irqmmoohenmjrebmgb.0.1680976945036.Z0FBQUFBQmtNYXd4LXRfY3doUnFhOXN0dEpZRzA3VmtTZVUzR3lSaDdQOXlMbmRlXzlSTHRjTzNnNHYxbEwxbnpBa1dFVUZaeE4yR3VUa2ZMSjVOcjR3bm50RzRKR0ZyeUVLd0Y4d2lreEZYdVBfbmVkbjdfQVNCdW12SkFDSDlNdjNtNzZaRTdUMHU"
