@@ -15,6 +15,4 @@ jobs:
       - name: Run API tests
         run: |
           postman collection run "26800640-51a84c1e-0ba1-4936-adb9-8847af8956dd" -e "26800640-5bd21c33-04fc-4619-afe3-5ae65d54a28c" --integration-id "138102-${{ github.run_id }}"
-      - name: Set output variable
-        id: set_output
-        run: pm.environment.get("bearer_token")
+  
