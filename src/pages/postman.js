@@ -36,7 +36,7 @@ function HomePage() {
 
   useEffect(() => {
     if (!token) {
-      Generate().then((result) => setToken(result));
+      setToken(Generate());
     }
   }, [token]);
 
