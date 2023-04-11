@@ -7,12 +7,15 @@ import HomePage from "./postman";
 
 import MultipleSelectCheckmarks from "./multiple";
 const inter = Inter({ subsets: ["latin"] });
+import axios from "axios";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Example />
-      <HomePage />
+      <div>
+        <Example />
+        <HomePage />
+      </div>
     </main>
   );
 }

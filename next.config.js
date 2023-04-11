@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: { customKey: process.env.API_KEY },
+  env: {
+    userName: process.env.USERNAME,
+    password: process.env.PASSWORD,
+    auth: process.env.AUTH,
+  },
 
   reactStrictMode: true,
 };
