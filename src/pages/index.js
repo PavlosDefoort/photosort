@@ -12,11 +12,6 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   return (
     <main className="">
-      {/*  
-      <img
-        src="https://styles.redditmedia.com/t5_3en0m/styles/mobileBannerImage_lvscrkszwcqa1.png"
-        className="vw-100 h-40 object-cover"
-      ></img>*/}
       <div>
         <HomePage />
       </div>
