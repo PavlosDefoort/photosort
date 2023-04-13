@@ -2,6 +2,8 @@ import Image from "next/image";
 import { Fascinate, Inter } from "next/font/google";
 import { useState, useEffect } from "react";
 import { data } from "autoprefixer";
+import { Dialog } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -13,10 +15,19 @@ import MultipleCheckTemplate from "./MultiSelect";
 
 import GridGallery from "./offthegrid";
 import { Disclosure } from "@headlessui/react";
+import Layout from "./layout";
+
+const navigation = [
+  { name: "Product", href: "#" },
+  { name: "Features", href: "#" },
+  { name: "Marketplace", href: "#" },
+  { name: "Company", href: "#" },
+];
 
 function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [after, setAfter] = useState("after");
+  const [after, setAfter] = useState("");
   const [count, setCount] = useState(0);
   const [subreddit, setSubreddit] = useState("");
   const [tag, setTag] = useState([]);
@@ -30,38 +41,8 @@ function HomePage() {
   const [search, setSearch] = useState("new");
   const [time, setTime] = useState("all");
   const [isTime, setIsTime] = useState(false);
-  const [nsfw, setNsfw] = useState(false);
+  const [nsfw, setNsfw] = useState("Both");
   const daKey = process.env.customKey;
-  const [lastTry, setLastTry] = useState(null);
-
-  useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", process.env.auth);
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-    myHeaders.append(
-      "Cookie",
-      "csv=2; edgebucket=GNBcA2zVmNgEdkIhDc; loid=0000000000adnpt678.2.1613408283000.Z0FBQUFBQmtOR20tQTVuS0NJaUFpWlV5LUtqZDdwSXU0QkNKU3Rialp0NlR5RUdpRGZoNVZXbzJGN2hBZzhyRkpramxISjRIYlM0VTIwYXM2QVlkV2g3cllfXzFZTHFSTXdyOWFLcUY0WjBCLU9kcWhnOEZOSnFJUXhaa3dnXzQxRlZnTFRKb2oyS1Q"
-    );
-
-    var urlencoded = new URLSearchParams();
-    urlencoded.append("grant_type", "password");
-    urlencoded.append("username", process.env.userName);
-    urlencoded.append("password", process.env.password);
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: urlencoded,
-      redirect: "follow",
-    };
-
-    if (typeof lastTry != "string") {
-      fetch("https://www.reddit.com/api/v1/access_token", requestOptions)
-        .then((response) => response.json())
-        .then((result) => setLastTry(result.access_token))
-        .catch((error) => console.log("error", error));
-    }
-  }, []);
 
   useEffect(() => {
     if (posts.length >= max || count == 10) {
@@ -69,41 +50,42 @@ function HomePage() {
 
       return;
     }
-    var myHeaders = new Headers();
-
-    myHeaders.append("User-Agent", "ChangeMeClient/0.1 by YourUsername");
-    myHeaders.append("Authorization", "bearer " + lastTry);
-    myHeaders.append(
-      "Cookie",
-      "csv=2; edgebucket=vu8Zr0Azm9tXfQWpq1; loid=0000000000adnpt678.2.1613408283000.Z0FBQUFBQmtNS3RDNDRiX1Nqc2xjeldFMW5fUFh1bGJRTHl4VlY5YmFfd1FneE14SWNMdllEQURObWRtWVdaZE1CSDU0UDZ6YWpraE8tSVJNVDhiMDRHcGlycDNtdXkzajhjZ0xyTjBNMUI1bC1JTEN5RlFxQk5lQnhCLTBhVjA1MGtvQVB1OTN4NUs; session_tracker=mpbbfqingcejjaeghe.0.1680911266642.Z0FBQUFBQmtNS3VqNnMyZUpNNE9VODBoUEhNZXc3MGZzTFJGVWRRMTBHTUUwdGdJQjBOSnRsLVVsaUZxTjcybmM4R3Jvd3cwbUEwODd4aUIwUWxOY0dzTkY5aWhVdDFHcFNPY2RSZ3pfQlBsaEhYWmk5UkZFbVpUMWVZTXdKblJrVzlOakEwUTZYdVE"
-    );
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
 
     let url =
-      "https://oauth.reddit.com/r/" +
+      "https://www.reddit.com/r/" +
       subreddit +
       "/" +
       search +
-      "?limit=100&t=" +
+      ".json?limit=100&t=" +
       time;
 
     if (after) {
       url += "&after=" + after;
     }
 
-    fetch(url, requestOptions)
+    fetch(url)
       .then((response) => response.json()) // parse response as JSON
       .then((result) => {
         if (result != null) {
           const filteredArticles = result.data.children.filter((post) => {
             // Replace "property" with the name of the property you want to filter by
             const searchArray = keyword.split(",");
-            const hasNSFW = post.data.over_18.toString() == nsfw;
+            let hasNSFW = null;
+            let tempNSFW = null;
+            console.log(nsfw);
+            if (nsfw == "Both") {
+              hasNSFW = true;
+            } else if (nsfw == "NSFW") {
+              tempNSFW = true;
+              hasNSFW = post.data.over_18 == tempNSFW;
+            } else {
+              tempNSFW = false;
+              hasNSFW = post.data.over_18 == tempNSFW;
+            }
+
+            // if nsfw == nsfw, then show only nsfw posts
+            // if nsfw == false, then show only non-nsfw posts
+            // if nsfw == both, then show both
 
             if (tag.length > 0) {
               return (
@@ -142,6 +124,7 @@ function HomePage() {
   function valuetext(value) {
     return `${value}°C`;
   }
+
   const handleButtonClick = () => {
     setWork(false);
     setPosts([]);
@@ -150,6 +133,7 @@ function HomePage() {
     setCount(0);
     setDisplay(false);
   };
+
   const handleButtonSet = () => {
     setWork(true);
     setPosts([]);
@@ -183,110 +167,136 @@ function HomePage() {
   const handleMediaChange = (selectedValues) => {
     setMedia(selectedValues);
   };
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <LinearProgress score={(posts.length / max) * 100} />
-      <h1> Images found: {posts.length}</h1>
-      <h2>Quota: {count}</h2>
-      <h2>Images to generate: {max}</h2>
+  useEffect(() => {
+    if (subreddit.length == 0) {
+      setSub(false);
+    } else {
+      const delayDebounceFn = setTimeout(() => {
+        setSub(true);
+      }, 1000);
 
-      <Box sx={{ width: 300 }}>
-        <Slider
-          aria-label="Temperature"
-          defaultValue={1}
-          getAriaValueText={valuetext}
-          valueLabelDisplay="auto"
-          step={1}
-          marks
-          min={0}
-          max={100}
-          onChange={(e) => {
-            setMax(e.target.value);
-          }}
-        />
-      </Box>
-      <Button onClick={handleButtonClick}>Reset</Button>
-      <Button onClick={handleButtonSet}>Start Search!</Button>
-      <Button onClick={handleChangeSub}>Change SubReddit!</Button>
-      <header className="App-header">
-        <div style={{ padding: "1rem" }}>
+      return () => clearTimeout(delayDebounceFn);
+    }
+  }, [subreddit]);
+
+  return (
+    <main>
+      <div>{isSubreddit == true ? <Layout data={subreddit} /> : ""}</div>
+
+      <div className="flex  flex-col items-center justify-between p-10">
+        <div style={{ padding: "1rem" }} className="flex">
           <input
             type="text"
-            className="w-full px-3 py-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            class="w-full h-40 px-3 py-2 text-gray-700 border rounded-lg focus:outline-full focus:shadow-outline resize-none font-medium text-4xl sm:text-6xl"
             placeholder="r/"
-            value={subreddit}
+            value={subreddit ? `r/${subreddit}` : ""}
             onChange={(e) => {
               setPosts([]);
-              setSubreddit(e.target.value.trim());
+              setSubreddit(e.target.value.replace("r/", "").trim(""));
               setCount(0);
               setSub(false);
             }}
           />
         </div>
+      </div>
+
+      <header className="">
         <div>
           {isSubreddit == true ? (
             <div>
-              <MultipleSelectCheckmarks
-                props={subreddit}
-                onSelectChange={handleSelectChange}
-              />
-              <div style={{ padding: "1rem" }}>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter some keywords [separated by commas]"
-                  value={keyword}
-                  onChange={(e) => {
-                    setKeyWord(e.target.value);
-                  }}
+              <div className="flex items-center justify-center">
+                <h1 className="pr-8">Max Images:</h1>
+
+                <Box sx={{ width: 300 }}>
+                  <Slider
+                    aria-label="Temperature"
+                    defaultValue={1}
+                    getAriaValueText={valuetext}
+                    valueLabelDisplay="auto"
+                    step={1}
+                    marks
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      setMax(e.target.value);
+                    }}
+                  />
+                </Box>
+              </div>
+              <div className="flex items-center justify-center">
+                <MultipleSelectCheckmarks
+                  props={subreddit}
+                  onSelectChange={handleSelectChange}
                 />
-              </div>
-
-              <div style={{ padding: "1rem" }}>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="How popular is it?!"
-                  value={upvotes}
-                  onChange={(e) => {
-                    setUpvotes(e.target.value);
-                  }}
-                ></input>
-              </div>
-              <MultipleCheckTemplate
-                options={["image", "video", "rich:video", "hosted:video"]}
-                onSelectChange={handleMediaChange}
-                name={"Media Type"}
-              />
-
-              <Selector
-                topics={["top", "controversial", "new", "hot", "rising"]}
-                onSelectChange={handleCriteriaChange}
-                name={"Sort"}
-              />
-
-              {search == "top" || search == "controversial" ? (
                 <div style={{ padding: "1rem" }}>
-                  <Selector
-                    topics={["all", "year", "month", "week", "day", "hour"]}
-                    onSelectChange={handleTimeChange}
-                    name={"Time"}
+                  <input
+                    type="text"
+                    className="w-70 p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter some keywords [separated by commas]"
+                    value={keyword}
+                    onChange={(e) => {
+                      setKeyWord(e.target.value);
+                    }}
                   />
                 </div>
-              ) : (
-                ""
-              )}
-              <Selector
-                topics={["true", "false"]}
-                onSelectChange={handleNSFWChange}
-                name={"NSFW"}
-              />
+
+                <div style={{ padding: "1rem" }}>
+                  <input
+                    type="text"
+                    className="w-30 p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="How popular is it?!"
+                    value={upvotes}
+                    onChange={(e) => {
+                      setUpvotes(e.target.value);
+                    }}
+                  ></input>
+                </div>
+
+                <Selector
+                  topics={["top", "controversial", "new", "hot", "rising"]}
+                  onSelectChange={handleCriteriaChange}
+                  name={"Sort"}
+                />
+
+                {search == "top" || search == "controversial" ? (
+                  <div style={{ padding: "1rem" }}>
+                    <Selector
+                      topics={["all", "year", "month", "week", "day", "hour"]}
+                      onSelectChange={handleTimeChange}
+                      name={"Time"}
+                    />
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Selector
+                  topics={["NSFW", "SFW", "Both"]}
+                  onSelectChange={handleNSFWChange}
+                  name={"NSFW"}
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <button
+                  onClick={handleButtonSet}
+                  type="button"
+                  class="text-white bg-gradient-to-br from-green-400 to-green-600 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                >
+                  Start Search!
+                </button>
+              </div>
+              <div className="text-sm text-gray-400 dark:text-gray-100 pt-3 pl-4">
+                <h1> Images found: {posts.length}</h1>
+                <h2>Quota: {count}/10</h2>
+                <h2>Images to generate: {max}</h2>
+              </div>
+              <LinearProgress score={(posts.length / max) * 100} />
             </div>
           ) : (
             ""
           )}
         </div>
       </header>
+
       <div className="articles">
         {display == true ? (
           <GridGallery gallery={posts} onSelectChange={handleSelectChange} />

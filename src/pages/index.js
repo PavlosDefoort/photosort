@@ -4,16 +4,20 @@ import { useState, useEffect } from "react";
 import { data } from "autoprefixer";
 import Example from "./home";
 import HomePage from "./postman";
+import Layout from "./layout";
 
 import MultipleSelectCheckmarks from "./multiple";
 const inter = Inter({ subsets: ["latin"] });
-import axios from "axios";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="">
+      {/*  
+      <img
+        src="https://styles.redditmedia.com/t5_3en0m/styles/mobileBannerImage_lvscrkszwcqa1.png"
+        className="vw-100 h-40 object-cover"
+      ></img>*/}
       <div>
-        <Example />
         <HomePage />
       </div>
     </main>
