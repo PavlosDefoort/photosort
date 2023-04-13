@@ -42,7 +42,6 @@ function HomePage() {
   const [time, setTime] = useState("all");
   const [isTime, setIsTime] = useState(false);
   const [nsfw, setNsfw] = useState("Both");
-  const daKey = process.env.customKey;
 
   useEffect(() => {
     if (posts.length >= max || count == 10) {
