@@ -17,6 +17,7 @@ export default function Layout({ data }) {
   // Fetch url when the component mounts and data changes
   useEffect(() => {
     const url = "https://www.reddit.com/r/" + data + "/about.json";
+
     fetch(url)
       .then((response) => response.json())
       .then((result) => {

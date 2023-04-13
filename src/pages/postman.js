@@ -27,7 +27,7 @@ const navigation = [
 function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [after, setAfter] = useState("");
+  const [after, setAfter] = useState("after");
   const [count, setCount] = useState(0);
   const [subreddit, setSubreddit] = useState("");
   const [tag, setTag] = useState([]);
@@ -61,7 +61,7 @@ function HomePage() {
     if (after) {
       url += "&after=" + after;
     }
-
+    console.log(url);
     fetch(url)
       .then((response) => response.json()) // parse response as JSON
       .then((result) => {
