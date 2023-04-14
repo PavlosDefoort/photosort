@@ -37,9 +37,6 @@ function GridGalleryCard({ post, show }) {
           <img
             src={post.data.url}
             alt="Description of the image"
-            onError={(e) => {
-              e.target.src = post.data.thumbnail;
-            }}
             // Set imageLoaded to true when the image loads successfully
             className="object-cover h-full w-full"
           />

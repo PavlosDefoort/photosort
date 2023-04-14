@@ -5,6 +5,7 @@ import { data } from "autoprefixer";
 import Example from "./home";
 import HomePage from "./postman";
 import Layout from "./layout";
+import HomeComing from "./zip";
 
 import MultipleSelectCheckmarks from "./multiple";
 const inter = Inter({ subsets: ["latin"] });
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <main className="">
       <div>
+        <Example />
         <HomePage />
       </div>
     </main>

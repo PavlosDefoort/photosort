@@ -16,6 +16,7 @@ import MultipleCheckTemplate from "./MultiSelect";
 import GridGallery from "./offthegrid";
 import { Disclosure } from "@headlessui/react";
 import Layout from "./layout";
+import HomeComing from "./zip";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -71,33 +72,39 @@ function HomePage() {
             const searchArray = keyword.split(",");
             let hasNSFW = null;
             let tempNSFW = null;
-            console.log(nsfw);
+
+            // if nsfw == nsfw, then show only nsfw posts
+
             if (nsfw == "Both") {
               hasNSFW = true;
+              // if nsfw == false, then show only non-nsfw posts
             } else if (nsfw == "NSFW") {
               tempNSFW = true;
               hasNSFW = post.data.over_18 == tempNSFW;
+              // if nsfw == both, then show both
             } else {
               tempNSFW = false;
               hasNSFW = post.data.over_18 == tempNSFW;
             }
-
-            // if nsfw == nsfw, then show only nsfw posts
-            // if nsfw == false, then show only non-nsfw posts
-            // if nsfw == both, then show both
 
             if (tag.length > 0) {
               return (
                 tag.includes(post.data.link_flair_text) &&
                 searchArray.some((word) => post.data.title.includes(word)) &&
                 hasNSFW &&
-                post.data.ups >= upvotes
+                post.data.ups >= upvotes &&
+                post.data.spoiler == false &&
+                post.data.is_self == false &&
+                post.data.quarantine == false
               );
             } else {
               return (
                 searchArray.some((word) => post.data.title.includes(word)) &&
                 hasNSFW &&
-                post.data.ups >= upvotes
+                post.data.ups >= upvotes &&
+                post.data.spoiler == false &&
+                post.data.is_self == false &&
+                post.data.quarantine == false
               );
             }
           });
@@ -179,14 +186,34 @@ function HomePage() {
   }, [subreddit]);
 
   return (
-    <main>
-      <div>{isSubreddit == true ? <Layout data={subreddit} /> : ""}</div>
+    <main className="bg-gradient-to-br from-white to-pink-99 min-h-screen ">
+      <div className="absolute right-20 text-m text-gray-700 dark:text-gray-100 pt-5">
+        <h1> Images found: {posts.length}</h1>
+        <h2>Quota: {count}/10</h2>
+        <h2>Images to generate: {max}</h2>
+      </div>
+      <div className="position-absolute pl-10 pt-2">
+        <h1 className="font-small dark:text-white pl-3 pb-1">
+          {" "}
+          Photosort powered by
+        </h1>
 
-      <div className="flex  flex-col items-center justify-between p-10">
-        <div style={{ padding: "1rem" }} className="flex">
+        <a href="https://www.reddit.com">
+          <img
+            src="https://cdn.worldvectorlogo.com/logos/reddit-1.svg"
+            alt="Reddit Logo"
+            layout="fixed"
+            width={250}
+            height={250}
+          ></img>
+        </a>
+      </div>
+      <div>{isSubreddit == true ? <Layout data={subreddit} /> : ""}</div>
+      <div className="flex  flex-col items-center justify-between pt-1">
+        <div style={{ padding: "0rem" }} className="flex">
           <input
             type="text"
-            class="w-full h-40 px-3 py-2 text-gray-700 border rounded-lg focus:outline-full focus:shadow-outline resize-none font-medium text-4xl sm:text-6xl"
+            class="w-full h-40 px-3 py-2 text-gray-700 border-4 rounded-lg focus:outline-full focus:shadow-outline resize-none font-medium text-4xl sm:text-6xl"
             placeholder="r/"
             value={subreddit ? `r/${subreddit}` : ""}
             onChange={(e) => {
@@ -198,16 +225,18 @@ function HomePage() {
           />
         </div>
       </div>
-
       <header className="">
         <div>
           {isSubreddit == true ? (
             <div>
-              <div className="flex items-center justify-center">
-                <h1 className="pr-8">Max Images:</h1>
+              <div className="flex items-center justify-center  pt-1">
+                <h1 className="text-sm text-gray-400 dark:text-gray-100 pr-5 pb-2">
+                  Max Images:
+                </h1>
 
                 <Box sx={{ width: 300 }}>
                   <Slider
+                    color="success"
                     aria-label="Temperature"
                     defaultValue={1}
                     getAriaValueText={valuetext}
@@ -215,23 +244,23 @@ function HomePage() {
                     step={1}
                     marks
                     min={0}
-                    max={100}
+                    max={250}
                     onChange={(e) => {
                       setMax(e.target.value);
                     }}
                   />
                 </Box>
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center  ">
                 <MultipleSelectCheckmarks
                   props={subreddit}
                   onSelectChange={handleSelectChange}
                 />
-                <div style={{ padding: "1rem" }}>
+                <div style={{ padding: "0.5rem" }}>
                   <input
                     type="text"
                     className="w-70 p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Enter some keywords [separated by commas]"
+                    placeholder="Keywords (a,b,c)"
                     value={keyword}
                     onChange={(e) => {
                       setKeyWord(e.target.value);
@@ -239,10 +268,10 @@ function HomePage() {
                   />
                 </div>
 
-                <div style={{ padding: "1rem" }}>
+                <div style={{ padding: "0.5rem" }}>
                   <input
                     type="text"
-                    className="w-30 p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-70 p-2 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="How popular is it?!"
                     value={upvotes}
                     onChange={(e) => {
@@ -258,7 +287,7 @@ function HomePage() {
                 />
 
                 {search == "top" || search == "controversial" ? (
-                  <div style={{ padding: "1rem" }}>
+                  <div style={{ padding: "0.5rem" }}>
                     <Selector
                       topics={["all", "year", "month", "week", "day", "hour"]}
                       onSelectChange={handleTimeChange}
@@ -268,12 +297,15 @@ function HomePage() {
                 ) : (
                   ""
                 )}
-                <Selector
-                  topics={["NSFW", "SFW", "Both"]}
-                  onSelectChange={handleNSFWChange}
-                  name={"NSFW"}
-                />
+                <div style={{ padding: "0.5rem" }}>
+                  <Selector
+                    topics={["SFW", "NSFW", "Both"]}
+                    onSelectChange={handleNSFWChange}
+                    name={"NSFW"}
+                  />
+                </div>
               </div>
+              <div></div>
               <div className="flex items-center justify-center">
                 <button
                   onClick={handleButtonSet}
@@ -283,22 +315,26 @@ function HomePage() {
                   Start Search!
                 </button>
               </div>
-              <div className="text-sm text-gray-400 dark:text-gray-100 pt-3 pl-4">
-                <h1> Images found: {posts.length}</h1>
-                <h2>Quota: {count}/10</h2>
-                <h2>Images to generate: {max}</h2>
+
+              <div className="flex  flex-col items-center justify-between">
+                <LinearProgress score={(posts.length / max) * 100} />
+                <div className="pt-1">
+                  <div>
+                    {display == true ? <HomeComing props={posts} /> : ""}
+                  </div>
+                </div>
               </div>
-              <LinearProgress score={(posts.length / max) * 100} />
             </div>
           ) : (
             ""
           )}
         </div>
       </header>
-
-      <div className="articles">
+      <div>
         {display == true ? (
-          <GridGallery gallery={posts} onSelectChange={handleSelectChange} />
+          <div className="pt-10">
+            <GridGallery gallery={posts} onSelectChange={handleSelectChange} />
+          </div>
         ) : (
           ""
         )}

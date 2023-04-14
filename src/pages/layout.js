@@ -42,20 +42,21 @@ export default function Layout({ data }) {
 
   return (
     <div>
-      <div class="flex justify-center items-center  space-x-6 pt-10">
+      <div class="flex justify-center items-center  space-x-6">
         <a href={"https://www.reddit.com/" + subUrl} class="inline-block">
           <img
             className=" w-[17rem] h-[17rem] object-cover rounded-full ring-2 ring-gray-400 dark:ring-gray-500"
             src={subIcon}
             alt="Subreddit icon"
+            style={{ backgroundColor: "white" }}
           />
         </a>
         <div class="font-medium dark:text-white text-left">
           <div class="text-5xl">{subTitle}</div>
-          <div class="text-m text-gray-500 dark:text-gray-100 pl-1">
+          <div class="text-m text-gray-500 dark:text-gray-100 pl-1 pt-1">
             {subSlash}
           </div>
-          <div class="text-sm text-gray-400 dark:text-gray-100 pt-3 pl-1">
+          <div class="text-sm text-gray-400 dark:text-gray-100 pt-4 pl-1">
             <h2>Users: {subUsers}</h2>
             <h2>Total Posts: {subPosts}</h2>
             <h2>NSFW: {subNSFW}</h2>
