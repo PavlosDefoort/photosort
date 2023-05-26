@@ -21,17 +21,15 @@ function GridGalleryCard({ post, show }) {
         </div>
         {post.data.is_video ? (
           <div>
-            {post.data.preview.reddit_video_preview?.fallback_url && (
-              <video
-                controls
-                autoPlay
-                muted
-                name
-                src={post.data.preview.reddit_video_preview.fallback_url}
-                onError={handleVideoError}
-                allowFullScreen
-              ></video>
-            )}
+            <video
+              controls
+              autoPlay
+              muted
+              name
+              src={post.data.url}
+              onError={handleVideoError}
+              allowFullScreen
+            ></video>
           </div>
         ) : (
           <img

@@ -22,27 +22,71 @@ export default function HomeComing({ props }) {
 
   const downloadResourcesOnClick = async () => {
     setLoading(true);
-
-    console.log(files);
+    const forbiddenCharsRegex = /[\\/:*?"<>|]/g;
 
     try {
       const zip = new JSZip();
+
       const remoteZips = files.map(async (file) => {
+        console.log(file);
         if (
           file.data.url.includes("png") ||
           file.data.url.includes("jpg") ||
           file.data.url.includes("jpeg")
         ) {
           try {
-            const response = await fetch(file.data.url);
+            const url = file.data.url;
+            // create api url
+
+            const apiUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+
+            const response = await fetch(apiUrl);
+            let title = file.data.title;
+            let cleanedTitle = title.replace(forbiddenCharsRegex, "");
+
+            let i = 1;
+            while (zip.files[`${cleanedTitle}.jpeg`]) {
+              cleanedTitle = `${cleanedTitle}_${i}`;
+              i++;
+            }
             const data = await response.blob();
-            zip.file(`${file.data.title}.jpeg`, data);
-            console.log("here");
+            zip.file(`${cleanedTitle}.jpeg`, data);
+
             return data;
           } catch (error) {
             console.error(`Error fetching ${file.data.url}: ${error}`);
             return null;
           }
+        } else if (
+          file.data.url.includes("gif") ||
+          file.data.url.includes("gifv")
+        ) {
+          try {
+            const url = file.data.url;
+            // create api url
+
+            const apiUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+
+            const response = await fetch(apiUrl);
+
+            // check if title has forbinden characters
+
+            let title = file.data.title;
+            let cleanedTitle = title.replace(forbiddenCharsRegex, "");
+            let i = 1;
+            while (zip.files[`${cleanedTitle}.gif`]) {
+              cleanedTitle = `${cleanedTitle}_${i}`;
+              i++;
+            }
+            const data = await response.blob();
+            zip.file(`${cleanedTitle}.gif`, data);
+
+            return data;
+          } catch (error) {
+            console.error(`Error fetching ${file.data.url}: ${error}`);
+            return null;
+          }
+        } else {
         }
       });
 
@@ -70,8 +114,7 @@ export default function HomeComing({ props }) {
     <div>
       <main className="flex   items-center justify-between">
         <h1 className="text-sm text-gray-400 dark:text-gray-100">
-          Note: Due to CORS Policy a lot of images may not be included in the
-          ZIP
+          Note: Due to CORS Policy some images may not be included in the ZIP
         </h1>
         <div className="pl-1">
           <button

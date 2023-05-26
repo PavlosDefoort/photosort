@@ -18,13 +18,6 @@ import { Disclosure } from "@headlessui/react";
 import Layout from "./layout";
 import HomeComing from "./zip";
 
-const navigation = [
-  { name: "Product", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "Marketplace", href: "#" },
-  { name: "Company", href: "#" },
-];
-
 function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -43,6 +36,7 @@ function HomePage() {
   const [time, setTime] = useState("all");
   const [isTime, setIsTime] = useState(false);
   const [nsfw, setNsfw] = useState("Both");
+  const [showGifs, setShowGifs] = useState("Both");
 
   useEffect(() => {
     if (posts.length >= max || count == 10) {
@@ -73,6 +67,22 @@ function HomePage() {
             let hasNSFW = null;
             let tempNSFW = null;
 
+            let hasGif = null;
+
+            let galleryCheck = post.data.is_gallery ?? null;
+
+            if (showGifs == "GIFs") {
+              hasGif =
+                post.data.url.includes(".gif") ||
+                post.data.url.includes(".gifv");
+            } else if (showGifs == "Images") {
+              hasGif =
+                post.data.url.includes(".jpg") ||
+                post.data.url.includes(".png");
+            } else {
+              hasGif = true;
+            }
+
             // if nsfw == nsfw, then show only nsfw posts
 
             if (nsfw == "Both") {
@@ -95,7 +105,14 @@ function HomePage() {
                 post.data.ups >= upvotes &&
                 post.data.spoiler == false &&
                 post.data.is_self == false &&
-                post.data.quarantine == false
+                post.data.quarantine == false &&
+                hasGif &&
+                post.data.domain != "redgifs.com" &&
+                post.data.domain != "gfycat.com" &&
+                post.data.domain != "i.imgur.com" &&
+                post.data.domain != "v3.redgifs.com" &&
+                post.data.domain != "files.catbox.moe" &&
+                galleryCheck == null
               );
             } else {
               return (
@@ -104,7 +121,14 @@ function HomePage() {
                 post.data.ups >= upvotes &&
                 post.data.spoiler == false &&
                 post.data.is_self == false &&
-                post.data.quarantine == false
+                post.data.quarantine == false &&
+                hasGif &&
+                post.data.domain != "redgifs.com" &&
+                post.data.domain != "gfycat.com" &&
+                post.data.domain != "i.imgur.com" &&
+                post.data.domain != "v3.redgifs.com" &&
+                post.data.domain != "files.catbox.moe" &&
+                galleryCheck == null
               );
             }
           });
@@ -171,7 +195,7 @@ function HomePage() {
   };
 
   const handleMediaChange = (selectedValues) => {
-    setMedia(selectedValues);
+    setShowGifs(selectedValues);
   };
   useEffect(() => {
     if (subreddit.length == 0) {
@@ -229,7 +253,7 @@ function HomePage() {
         <div>
           {isSubreddit == true ? (
             <div>
-              <div className="flex items-center justify-center  pt-1">
+              <div className="flex items-center justify-center pt-1">
                 <h1 className="text-sm text-gray-400 dark:text-gray-100 pr-5 pb-2">
                   Max Images:
                 </h1>
@@ -243,8 +267,8 @@ function HomePage() {
                     valueLabelDisplay="auto"
                     step={1}
                     marks
-                    min={0}
-                    max={250}
+                    min={1}
+                    max={200}
                     onChange={(e) => {
                       setMax(e.target.value);
                     }}
@@ -302,6 +326,13 @@ function HomePage() {
                     topics={["SFW", "NSFW", "Both"]}
                     onSelectChange={handleNSFWChange}
                     name={"NSFW"}
+                  />
+                </div>
+                <div style={{ padding: "0.5rem" }}>
+                  <Selector
+                    topics={["GIFs", "Images", "Both"]}
+                    onSelectChange={handleMediaChange}
+                    name={"Media"}
                   />
                 </div>
               </div>

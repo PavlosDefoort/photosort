@@ -1,5 +1,5 @@
 import Selector from "./selector.js";
-import IndeterminateCheckbox from "./flairs.js";
+
 import { useState, useEffect } from "react";
 
 export default function Layout({ data }) {
